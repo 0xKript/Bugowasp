@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bug Security</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;700&family=Pixelify+Sans:wght@400..700&family=Oxanium:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "var(--primary-color)",
+              "primary-hover": "var(--primary-hover)",
+              "background-dark": "#0a0a0a",
+              "surface-dark": "#1a1a1a",
+              "border-dark": "#333333",
+              "text-subtle": "#cccccc",
+              "severity-critical": "#ff4757",
+              "severity-high": "#ff4757",
+              "severity-medium": "#ffa502",
+              "severity-low": "#ffd32a",
+              "danger": "#ff4757",
+            },
+            fontFamily: {
+              "sans": ["Noto Sans Arabic", "Segoe UI", "system-ui", "sans-serif"],
+              "display": ["Inter", "Noto Sans Arabic", "sans-serif"],
+              "pixel": ["'Pixelify Sans'", "cursive"],
+              "oxanium": ["'Oxanium'", "sans-serif"]
+            },
+            boxShadow: {
+              'glow': '0 0 15px rgba(var(--primary-rgb), 0.3)',
+              'glow-red': '0 0 15px rgba(255, 71, 87, 0.3)',
+              'glow-blue': '0 0 15px rgba(59, 130, 246, 0.3)',
+            },
+            animation: {
+              'scan-v-fast': 'scan-v 1s linear infinite',
+              'marquee': 'marquee 10s linear infinite',
+              'spin-slow': 'spin 12s linear infinite',
+              'reverse-spin': 'reverse-spin 8s linear infinite',
+              'pulse-slow': 'pulse-slow-kf 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            },
+            keyframes: {
+              'scan-v': {
+                '0%': { transform: 'translateY(-100%)', opacity: '0' },
+                '50%': { opacity: '0.8' },
+                '100%': { transform: 'translateY(1000%)', opacity: '0' },
+              },
+              'marquee': {
+                '0%': { transform: 'translateX(0%)' },
+                '100%': { transform: 'translateX(-50%)' },
+              },
+              'reverse-spin': {
+                'from': { transform: 'rotate(360deg)' },
+                'to': { transform: 'rotate(0deg)' },
+              },
+              'pulse-slow-kf': {
+                '0%, 100%': { opacity: '1' },
+                '50%': { opacity: '.6' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      :root {
+        --primary-color: #00d4aa;
+        --primary-hover: #00b591;
+        --primary-rgb: 0, 212, 170;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #0a0a0a; }
+      ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
+      body { margin: 0; padding: 0; }
+
+      /* Noise Effect for A09 */
+      @keyframes noise-anim {
+        0% { transform: translate(0,0) }
+        10% { transform: translate(-5%,-5%) }
+        20% { transform: translate(-10%,5%) }
+        30% { transform: translate(5%,-10%) }
+        40% { transform: translate(-5%,15%) }
+        50% { transform: translate(-10%,5%) }
+        60% { transform: translate(15%,0) }
+        70% { transform: translate(0,10%) }
+        80% { transform: translate(-15%,0) }
+        90% { transform: translate(10%,5%) }
+        100% { transform: translate(5%,0) }
+      }
+      .noise-bg::before {
+        content: "";
+        position: absolute;
+        top: -50%; left: -50%; width: 200%; height: 200%;
+        background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+        opacity: 0.15;
+        animation: noise-anim 0.2s infinite;
+        pointer-events: none;
+      }
+
+      /* Slow vertical scan line for A09 */
+      @keyframes scan-line-v {
+        0% { transform: translateY(-100%); opacity: 0; }
+        50% { opacity: 0.5; }
+        100% { transform: translateY(1000%); opacity: 0; }
+      }
+      .scan-line-slow {
+        background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), transparent);
+        height: 100px;
+        width: 100%;
+        position: absolute;
+        animation: scan-line-v 8s linear infinite;
+      }
+
+      /* Network Line Pulse for A10 */
+      @keyframes dash-pulse {
+        to { stroke-dashoffset: -20; }
+      }
+      .dash-anim {
+        stroke-dasharray: 5;
+        animation: dash-pulse 2s linear infinite;
+      }
+
+      /* Gate Vibration for A01 */
+      @keyframes gate-jitter {
+        0% { transform: translate(0) rotate(0.5deg); }
+        25% { transform: translate(-1px, 1px) rotate(-0.5deg); }
+        50% { transform: translate(1px, -1px) rotate(0.5deg); }
+        75% { transform: translate(-1px, -1px) rotate(0.5deg); }
+        100% { transform: translate(0) rotate(0.5deg); }
+      }
+      .animate-gate-jitter:hover { animation: gate-jitter 0.15s infinite; }
+
+      /* Data Fallout for A02 */
+      @keyframes fallout {
+        0% { transform: translateY(-20px); opacity: 0; }
+        50% { opacity: 1; }
+        100% { transform: translateY(40px); opacity: 0; }
+      }
+      .fallout-item { animation: fallout 2s linear infinite; }
+
+      /* Digital Scan Distortion for A07 */
+      @keyframes scan-distortion {
+        0% { clip-path: inset(0 0 90% 0); opacity: 0.5; }
+        50% { clip-path: inset(45% 0 45% 0); opacity: 1; }
+        100% { clip-path: inset(90% 0 0 0); opacity: 0.5; }
+      }
+      .scanner-distort { animation: scan-distortion 2s ease-in-out infinite; }
+
+      /* Progress Regression for A08 */
+      @keyframes regress {
+        0% { width: 90%; }
+        50% { width: 10%; }
+        100% { width: 90%; }
+      }
+      .animate-regress { animation: regress 4s ease-in-out infinite; }
+
+      /* Card Shapes */
+      .gate-shape { clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%); }
+      .blueprint-shape { clip-path: polygon(0 0, 95% 0, 100% 5%, 100% 100%, 5% 100%, 0 95%); border-style: dashed !important; }
+      .cracked-shape { clip-path: polygon(0 0, 45% 2%, 55% 0, 100% 0, 98% 45%, 100% 55%, 100% 100%, 55% 98%, 45% 100%, 0 100%, 2% 55%, 0 45%); }
+
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-background-dark text-white font-sans selection:bg-primary selection:text-black">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "Copy of Copy of owsapi111",
+  "description": "A professional learning platform focused on the OWASP Top 10 vulnerabilities, featuring interactive labs, quizzes, and a comprehensive settings dashboard.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
